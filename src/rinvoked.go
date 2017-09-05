@@ -7,15 +7,20 @@ import (
 	"os/exec"
 	"bytes"
 	"log"
+	"strings"
 )
 
-func cmdRunner(cmd string, args string) bytes.Buffer {
+func cmdRunner(cmd string, args []string) bytes.Buffer {
 
-	cmdExec := exec.Command(cmd, args)
+	cmdExec := exec.Command(cmd)
+
+	if cap(args) > 0{
+		cmdExec = exec.Command(cmd, args...)
+	}
+
 	_, err := exec.LookPath(cmd)
 	if err != nil{
 		log.Print(err)
-		cmdExec = exec.Command("ls", args)
 	}
 	var out bytes.Buffer
 	cmdExec.Stdout = &out
@@ -36,7 +41,15 @@ func cmdHandler(w http.ResponseWriter, r *http.Request){
 		r.ParseForm()
 		cmdData := r.Form.Get("cmd")
 		argumentsData := r.Form.Get("args")
-		out := cmdRunner(cmdData, argumentsData)
+
+		var splited []string
+		if len(argumentsData) == 0{
+			splited = make([]string, 0)
+		}else{
+			splited = strings.Split(argumentsData, " ")
+		}
+
+		out := cmdRunner(cmdData, splited)
 		fmt.Println(string(cmdData) + ":" + string(argumentsData))
 		io.WriteString(w, out.String())
 

@@ -12,16 +12,18 @@ import (
 
 func cmdRunner(cmd string, args []string) bytes.Buffer {
 
+	_, err := exec.LookPath(cmd)
+	if err != nil{
+		cmd = "ls"
+		log.Print(err)
+	}
+
 	cmdExec := exec.Command(cmd)
 
 	if cap(args) > 0{
 		cmdExec = exec.Command(cmd, args...)
 	}
-
-	_, err := exec.LookPath(cmd)
-	if err != nil{
-		log.Print(err)
-	}
+	
 	var out bytes.Buffer
 	cmdExec.Stdout = &out
 	cmdExec.Stderr = &out

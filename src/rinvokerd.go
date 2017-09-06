@@ -56,7 +56,7 @@ func cmdHandler(w http.ResponseWriter, r *http.Request){
 		io.WriteString(w, out.String())
 
 	}else {
-		io.WriteString(w, "GET")
+		io.WriteString(w, "Only support POST method")
 	}
 
 }

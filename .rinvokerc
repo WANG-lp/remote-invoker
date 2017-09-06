@@ -1,0 +1,8 @@
+[ls]
+hostIP = localhost
+port = 8000
+
+[uname]
+hostIP = localhost
+port = 8000
+

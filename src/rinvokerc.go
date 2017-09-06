@@ -11,6 +11,7 @@ import (
 	"./utils"
 )
 
+
 func makePayload(cmdName string, args string) string {
 	v := url.Values{}
 	v.Set("cmd", cmdName)

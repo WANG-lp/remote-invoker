@@ -1,0 +1,5 @@
+FROM fedora/26
+MAINTAINER William WANG <lazydomino@gmail.com>
+
+RUN dnf update -y && dnf install -y texlive-* && dnf clean all && \
+    curl https://github.com/WANG-lp/remote-invoker/archive/master.zip -o /root/remote-invoker.zip

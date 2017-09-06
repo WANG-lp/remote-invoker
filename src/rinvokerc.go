@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"io/ioutil"
+	"./utils"
 )
 
 func makePayload(cmdName string, args string) string {
@@ -19,16 +20,31 @@ func makePayload(cmdName string, args string) string {
 
 func main() {
 	log.Println("remote-invoker client started...")
-	args:= os.Args
+	args := os.Args
 
-	serverUrl := "http://localhost:8000/cmd/"
 	cmdName := args[0]
-	arguments:= strings.Join(args[1:], " ")
+	arguments := strings.Join(args[1:], " ")
+
+	log.Println("loading config file for " + cmdName + " application...")
+
+	cmdSection := utils.ConfigFileLoader(os.Getenv("HOME")+"/.rinvokerc", cmdName)
+
+	hostIP, err := cmdSection.GetKey("hostIP")
+	if err != nil {
+		log.Println("Cannot found hostIP in config file")
+	}
+	port, err := cmdSection.GetKey("port")
+	if err != nil {
+		log.Println("Cannot found port in config file")
+	}
+
+	fmt.Println(hostIP.Value())
+	fmt.Println(port.Value())
 
 	fmt.Println(cmdName)
 	fmt.Println(arguments)
 
-	req, err := http.NewRequest("POST", serverUrl, strings.NewReader(makePayload(cmdName, arguments)))
+	req, err := http.NewRequest("POST", "http://"+hostIP.Value()+":"+port.Value()+"/cmd/", strings.NewReader(makePayload(cmdName, arguments)))
 	req.Header.Add("content-type", "application/x-www-form-urlencoded")
 	req.Header.Add("cache-control", "no-cache")
 	if err != nil {

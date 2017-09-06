@@ -23,7 +23,7 @@ func cmdRunner(cmd string, args []string) bytes.Buffer {
 	if cap(args) > 0{
 		cmdExec = exec.Command(cmd, args...)
 	}
-	
+
 	var out bytes.Buffer
 	cmdExec.Stdout = &out
 	cmdExec.Stderr = &out

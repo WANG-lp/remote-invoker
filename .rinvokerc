@@ -1,7 +1,10 @@
+[pdflatex]
+hostIP = localhost
+port = 8000
 [ls]
 hostIP = localhost
 port = 8000
-
+workDir=/home/will
 [uname]
 hostIP = localhost
 port = 8000

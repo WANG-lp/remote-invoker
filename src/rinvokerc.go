@@ -12,10 +12,15 @@ import (
 )
 
 
-func makePayload(cmdName string, args string) string {
+func makePayload(cmdName string, args string, workdir string) string {
 	v := url.Values{}
 	v.Set("cmd", cmdName)
 	v.Set("args", args)
+	if len(workdir) ==0{
+		v.Set("workdir", "/")
+	}else{
+		v.Set("workdir", workdir)
+	}
 	return v.Encode()
 }
 
@@ -23,8 +28,12 @@ func main() {
 	log.Println("remote-invoker client started...")
 	args := os.Args
 
-	cmdName := args[0]
+	cmdNameRAW := args[0]
 	arguments := strings.Join(args[1:], " ")
+
+	cmdNameList := strings.Split(cmdNameRAW, "/")
+
+	cmdName:= cmdNameList[len(cmdNameList)-1]
 
 	log.Println("loading config file for " + cmdName + " application...")
 
@@ -38,14 +47,18 @@ func main() {
 	if err != nil {
 		log.Println("Cannot found port in config file")
 	}
+	workdir, err := cmdSection.GetKey("workDir")
+	if err != nil {
+		log.Println("Cannot found workDir in config file")
+	}
 
-	fmt.Println(hostIP.Value())
-	fmt.Println(port.Value())
+	log.Println(hostIP.Value())
+	log.Println(port.Value())
 
-	fmt.Println(cmdName)
-	fmt.Println(arguments)
+	log.Println(cmdName)
+	log.Println(arguments)
 
-	req, err := http.NewRequest("POST", "http://"+hostIP.Value()+":"+port.Value()+"/cmd/", strings.NewReader(makePayload(cmdName, arguments)))
+	req, err := http.NewRequest("POST", "http://"+hostIP.Value()+":"+port.Value()+"/cmd/", strings.NewReader(makePayload(cmdName, arguments, workdir.Value())))
 	req.Header.Add("content-type", "application/x-www-form-urlencoded")
 	req.Header.Add("cache-control", "no-cache")
 	if err != nil {

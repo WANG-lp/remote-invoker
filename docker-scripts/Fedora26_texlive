@@ -1,12 +1,15 @@
 FROM fedora:26
 MAINTAINER William WANG <lazydomino@gmail.com>
 
-RUN dnf update -y && dnf install -y texlive-* && dnf clean all && \
-    curl -L https://github.com/WANG-lp/remote-invoker/archive/v0.1.tar.gz  -o /root/src.tar.gz && \
+RUN dnf update -y && dnf install -y texlive-* && dnf clean all
+RUN curl -L https://github.com/WANG-lp/remote-invoker/archive/v0.1.tar.gz  -o /root/src.tar.gz && \
     tar xzf /root/src.tar.gz -C /root && curl -L https://storage.googleapis.com/golang/go1.9.linux-amd64.tar.gz -o /root/go.tar.gz && \
     tar xzf /root/go.tar.gz -C /usr/local && rm -f /root/src.tar.gz /root/go.tar.gz && \
     /usr/local/go/bin/go build -o /root/rinvokerd /root/remote-invoker-0.1/src/rinvokerd.go && rm -rf /usr/local/go
 
 EXPOSE 8000
+
+VOLUME ["/data"]
+WORKDIR /data
 
 CMD ["/root/rinvokerd"]

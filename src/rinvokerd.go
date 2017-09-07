@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func cmdRunner(cmd string, args []string) bytes.Buffer {
+func cmdRunner(cmd string, args []string, workdir string) bytes.Buffer {
 
 	_, err := exec.LookPath(cmd)
 	if err != nil{
@@ -28,6 +28,11 @@ func cmdRunner(cmd string, args []string) bytes.Buffer {
 	cmdExec.Stdout = &out
 	cmdExec.Stderr = &out
 
+	if len(workdir) == 0{
+		workdir = "/"
+	}
+
+	cmdExec.Dir = workdir
 	cmdExec.Run()
 
 	fmt.Print(out.String())
@@ -43,6 +48,7 @@ func cmdHandler(w http.ResponseWriter, r *http.Request){
 		r.ParseForm()
 		cmdData := r.Form.Get("cmd")
 		argumentsData := r.Form.Get("args")
+		workdir := r.Form.Get("workdir")
 
 		var splited []string
 		if len(argumentsData) == 0{
@@ -51,7 +57,7 @@ func cmdHandler(w http.ResponseWriter, r *http.Request){
 			splited = strings.Split(argumentsData, " ")
 		}
 
-		out := cmdRunner(cmdData, splited)
+		out := cmdRunner(cmdData, splited, workdir)
 		fmt.Println(string(cmdData) + ":" + string(argumentsData))
 		io.WriteString(w, out.String())
 

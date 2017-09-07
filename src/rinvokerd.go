@@ -2,25 +2,25 @@ package main
 
 import "fmt"
 import (
-	"net/http"
-	"io"
-	"os/exec"
 	"bytes"
+	"io"
 	"log"
+	"net/http"
+	"os/exec"
 	"strings"
 )
 
 func cmdRunner(cmd string, args []string, workdir string) bytes.Buffer {
 
 	_, err := exec.LookPath(cmd)
-	if err != nil{
+	if err != nil {
 		cmd = "ls"
 		log.Print(err)
 	}
 
 	cmdExec := exec.Command(cmd)
 
-	if cap(args) > 0{
+	if cap(args) > 0 {
 		cmdExec = exec.Command(cmd, args...)
 	}
 
@@ -28,7 +28,7 @@ func cmdRunner(cmd string, args []string, workdir string) bytes.Buffer {
 	cmdExec.Stdout = &out
 	cmdExec.Stderr = &out
 
-	if len(workdir) == 0{
+	if len(workdir) == 0 {
 		workdir = "/"
 	}
 
@@ -39,21 +39,20 @@ func cmdRunner(cmd string, args []string, workdir string) bytes.Buffer {
 
 	return out
 
-
 }
 
-func cmdHandler(w http.ResponseWriter, r *http.Request){
+func cmdHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
-		r.ParseMultipartForm(16*1024)//16k post data
+		r.ParseMultipartForm(16 * 1024) //16k post data
 		r.ParseForm()
 		cmdData := r.Form.Get("cmd")
 		argumentsData := r.Form.Get("args")
 		workdir := r.Form.Get("workdir")
 
 		var splited []string
-		if len(argumentsData) == 0{
+		if len(argumentsData) == 0 {
 			splited = make([]string, 0)
-		}else{
+		} else {
 			splited = strings.Split(argumentsData, " ")
 		}
 
@@ -61,7 +60,7 @@ func cmdHandler(w http.ResponseWriter, r *http.Request){
 		fmt.Println(string(cmdData) + ":" + string(argumentsData))
 		io.WriteString(w, out.String())
 
-	}else {
+	} else {
 		io.WriteString(w, "Only support POST method")
 	}
 

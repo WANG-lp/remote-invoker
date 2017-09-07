@@ -1,24 +1,23 @@
 package main
 
 import (
-	"log"
-	"os"
+	"./utils"
 	"fmt"
-	"strings"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
-	"io/ioutil"
-	"./utils"
+	"os"
+	"strings"
 )
-
 
 func makePayload(cmdName string, args string, workdir string) string {
 	v := url.Values{}
 	v.Set("cmd", cmdName)
 	v.Set("args", args)
-	if len(workdir) ==0{
+	if len(workdir) == 0 {
 		v.Set("workdir", "/")
-	}else{
+	} else {
 		v.Set("workdir", workdir)
 	}
 	return v.Encode()
@@ -33,7 +32,7 @@ func main() {
 
 	cmdNameList := strings.Split(cmdNameRAW, "/")
 
-	cmdName:= cmdNameList[len(cmdNameList)-1]
+	cmdName := cmdNameList[len(cmdNameList)-1]
 
 	log.Println("loading config file for " + cmdName + " application...")
 

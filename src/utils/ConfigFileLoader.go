@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-func ConfigFileLoader(filename string, cmdName string) *ini.Section  {
+func ConfigFileLoader(filename string, cmdName string) *ini.Section {
 	cfg, err := ini.InsensitiveLoad(filename)
 
 	if err != nil {
@@ -14,7 +14,7 @@ func ConfigFileLoader(filename string, cmdName string) *ini.Section  {
 
 	section, err := cfg.GetSection(cmdName)
 
-	if err != nil{
+	if err != nil {
 		log.Panic("Cannot found application " + cmdName + " in config file...")
 	}
 
